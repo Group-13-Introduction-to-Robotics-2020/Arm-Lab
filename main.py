@@ -4,7 +4,6 @@ import sys
 import math
 import copy
 import numpy as np
-#helllo Clara's edits
 
 if __name__ == '__main__':
 

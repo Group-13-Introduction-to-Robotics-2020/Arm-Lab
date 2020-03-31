@@ -2,18 +2,18 @@ import numpy as np
 import time
 import matplotlib.pyplot as plt
 
-mm=25.4 #conversion inches to mm later... not yet
-lower_length=3.75#*mm
-upper_length=2.5#*mm
+lower_length=3.75
+upper_length=2.5
 
 lower_theta=np.linspace(0,np.pi,300)#rads
 upper_theta=np.linspace(-np.pi,np.pi,600)#rads
 
-#variable label: object_number=[lowerx,lowery,upperx,uppery]
-ob1=np.array([-4,4,-2,6])
-ob2p1=np.array([-1,1,0,3])
-ob2p2=np.array([0,2,1,3])
-ob3=np.array([1,5,3,7])
+#variable label: object_number=[lowerx,lowery,upperx,uppery
+r=.25#in radius of bot to bloat obstacles
+ob1=np.array([-4-r,4-r,-2+r,6+r])
+ob2p1=np.array([-1-r,1-r,0+r,3+r])
+ob2p2=np.array([0-r,2-r,1+r,3+r])
+ob3=np.array([1-r,5-r,3+r,7+r])
 crash=np.array([[0,0,0,0]])
 #count=0
 for lower_angle in lower_theta:

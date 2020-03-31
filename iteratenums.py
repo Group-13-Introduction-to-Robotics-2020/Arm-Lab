@@ -20,7 +20,7 @@ for lower_angle in lower_theta:
     for upper_angle in upper_theta:
         end_angle=lower_angle+upper_angle
         x=lower_length*np.cos(lower_angle)+upper_length*np.cos(end_angle)
-        y=lower_length*np.cos(lower_angle)+upper_length*np.sin(end_angle)
+        y=lower_length*np.sin(lower_angle)+upper_length*np.sin(end_angle)
         
         if (x>=ob1[0] and x<=ob1[2] and y>=ob1[1] and y<=ob1[3] or
         x>=ob2p1[0] and x<=ob2p1[2] and y>=ob2p1[1] and y<=ob2p1[3] or
@@ -33,7 +33,7 @@ plt.plot(crash[:,0],crash[:,1],'.')
 plt.title("Configuration Space of Two Link Robot")
 plt.ylabel("Angle between first and second link in degrees")
 plt.xlabel("Angle at the base in degrees")
-plt.axis([0,360,-180,180])
+plt.axis([0,180,-180,180])
 plt.show()
 
 

@@ -5,24 +5,61 @@ import math
 import copy
 import numpy as np
 
+
 if __name__ == '__main__':
 
+    
+    class Pid:
+        def __init__(self, Kp, Ki, Kd):####### do I need 2 Kps and 2 Kds, etc since it is two arms??
+            self.Kp = Kp
+            self.Ki = Ki
+            self.Kd = Kd
+            self.error = 0
+            self.previousError = 0
+            self.changeInError = 0
+            self.cummulativeError = 0
+            
+        def action(self, timeStep):
+            motorCommand = self.Kp*self.error+(self.changeInError)*self.Kd+self.Ki*self.cummulativeError# Step 2: Write a PID controller for motor speed
+            return motorCommand
+
+    def anglediff(goal,current):
+        error= math.atan2(math.sin(goal-current), math.cos(goal-current))
+        return error
+    
+    def sign(v_err):
+        if v_err <= 0:
+            return -1
+        return 1
+
+
+
     arm = AcrobotEnv() # set up an instance of the arm class
+    arm.rendering = True # True displays the video
+    
+    observation = arm.reset() #not sure if needed Remember:
+    #observation is [left reading, right reading, encoder value] 
     
     timeStep = 0.02 # sec
-    timeForEachMove = 1 # sec
+    timeForEachMove = 10 # sec
     stepsForEachMove = round(timeForEachMove/timeStep)
 
-    # Make configuration space
+    # Make configuraton space
     # Insert you code or calls to functions here
 
     # Get three waypoints from the user
-    Ax = int(input("Type Ax: "))
-    Ay = int(input("Type Ay: "))
-    Bx = int(input("Type Bx: "))
-    By = int(input("Type By: "))
-    Cx = int(input("Type Cx: "))
-    Cy = int(input("Type Cy: "))
+##    Ax = int(input("Type Ax: "))
+##    Ay = int(input("Type Ay: "))
+##    Bx = int(input("Type Bx: "))
+##    By = int(input("Type By: "))
+##    Cx = int(input("Type Cx: "))
+##    Cy = int(input("Type Cy: "))
+    Ax=1
+    Bx=2
+    Cx=3
+    Ay=4
+    By=5
+    Cy=7
 
     arm.Ax = Ax*0.0254; # Simulaiton is in SI units
     arm.Ay = Ay*0.0254; # Simulaiton is in SI units
@@ -33,26 +70,62 @@ if __name__ == '__main__':
 
     # Plan a path
     # Insert your code or calls to functions here
-    numberOfWaypoints = 10 # Change this based on your path
+
+    angles=np.array([[50,40],[55,44],[60,50]])#[base_angle, joint_angle]
+    angles=angles/180*np.pi
+    numberOfWaypoints = len(angles) # Change this based on your path
+    print(numberOfWaypoints)#should display 3 at the moment
     
+    pidJoint= Pid(.003,0,-.00009)#
+    pidBase = Pid(0.0045,0,0.0002) 
     arm.reset() # start simulation
-    
+
     for waypoint in range(numberOfWaypoints):
 
         # Get current waypoint
+        wbase_angle=angles[waypoint,0]
+        wjoint_angle=angles[waypoint,1]
 
         for timeStep in range(stepsForEachMove):
+           
+            tic = time.perf_counter() # timer to maintain loop frequency
+        
+            BaseError = anglediff(wbase_angle,arm.state[0])# Step 1.1: Calculate  error based on light sensors
+            dBaseError = -1*sign(BaseError)*arm.state[2]# Step 1.2: Calculate change in error based on light sensors
+            iBaseError = pidBase.cummulativeError+dBaseError*timeStep# Step 1.3: Calculate cummulative error based on light sensors
 
-            tic = time.perf_counter()
+            pidBase.error = BaseError # set the class attributes
+            pidBase.changeInError = dBaseError # set the class attributes
+            pidBase.cummulativeError = iBaseError # set the class attributes
 
+            JointError = anglediff(wjoint_angle,arm.state[1])# Step 1.1: Calculate  error based on light sensors
+            dJointError = -1*sign(JointError)*arm.state[3]# Step 1.2: Calculate change in error based on light sensors
+            iJointError = pidJoint.cummulativeError+dJointError*timeStep# Step 1.3: Calculate cummulative error based on light sensors
+
+            pidJoint.error = JointError # set the class attributes
+            pidJoint.changeInError = dJointError # set the class attributes
+            pidJoint.cummulativeError = iJointError # set the class attributes
             # Control arm to reach this waypoint
-
-            actionHere1 = 0 # N torque # Change this based on your controller
-            actionHere2 = 0 # N torque # Change this based on your controller
+            
+            actionHere1 = pidBase.action(timeStep) # Nm torque # Change this based on your controller
+            actionHere2 = pidJoint.action(timeStep) # Nm torque # Change this based on your controller
+            #print("The Joint error is",JointError,"The Base error is",BaseError)
+            #print("torque Joint is %g" %actionHere2)
+            #print("torque Base is %g" %actionHere1)
+            
+            pidBase.previousError = BaseError # Set previous error to current error
+            pidJoint.previousError = JointError # Set previous error to current error
+            length=3.75*2.54/100#m
+            g=9.81#m/s^2
+            m=0.005#kg
+            feed=m*g*np.cos(arm.state[0])*length/2
+            #print(arm.state[0])
             
             arm.render() # Update rendering
-            state, reward, terminal , __ = arm.step(actionHere1, actionHere2)
+            state, reward, terminal , __ = arm.step(actionHere1+feed, actionHere2)
         
     print("Done")
     input("Press Enter to close...")
     arm.close()
+
+

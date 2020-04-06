@@ -74,28 +74,32 @@ if __name__ == '__main__':
     # Inverse Kinematics
     # 6 sets of angles, 2 sets for each coordinate (A,B,C) for the two solutions for that point
     # (A_base1, A_joint1), (A_base2, A_joint2), (B_base1, B_joint1), ...
-    L1 = 3.75 #inches
-    L2 = 2.5 #inches
+    L1 = 3.75*0.0254 #inches
+    L2 = 2.5*0.0254 #inches
 
-    A_joint1 = np.arccos((arm.Ax^2 + arm.Ay^2 - L1^2 - L2^2)/(2*L1*L2))
-    A_base1 = np.arctan2(arm.Ay, arm.Ax) - np.arcsin((L2*np.sin(A_joint1))/np.sqrt(arm.Ax^2 + arm.Ay^2))
+    A_joint1 = np.arccos((arm.Ax**2 + arm.Ay**2 - L1**2 - L2**2)/(2*L1*L2))
+    A_base1 = np.arctan2(arm.Ay, arm.Ax) - np.arcsin((L2*np.sin(A_joint1))/np.sqrt(arm.Ax**2 + arm.Ay**2))
     A_joint2 = (2*np.pi) - A_joint1
-    A_base2 = np.arctan2(arm.Ay, arm.Ax) - np.arcsin((L2*np.sin(A_joint2))/np.sqrt(arm.Ax^2 + arm.Ay^2))
+    A_base2 = np.arctan2(arm.Ay, arm.Ax) - np.arcsin((L2*np.sin(A_joint2))/np.sqrt(arm.Ax**2 + arm.Ay**2))
 
-    B_joint1 = np.arccos((arm.Bx^2 + arm.By^2 - L1^2 - L2^2)/(2*L1*L2))
-    B_base1 = np.arctan2(arm.By, arm.Bx) - np.arcsin((L2*np.sin(B_joint1))/np.sqrt(arm.Bx^2 + arm.By^2))
+    B_joint1 = np.arccos((arm.Bx**2 + arm.By**2 - L1**2 - L2**2)/(2*L1*L2))
+    B_base1 = np.arctan2(arm.By, arm.Bx) - np.arcsin((L2*np.sin(B_joint1))/np.sqrt(arm.Bx**2 + arm.By**2))
     B_joint2 = (2*np.pi) - B_joint1
-    B_base2 = np.arctan2(arm.By, arm.Bx) - np.arcsin((L2*np.sin(B_joint2))/np.sqrt(arm.Bx^2 + arm.By^2))
+    B_base2 = np.arctan2(arm.By, arm.Bx) - np.arcsin((L2*np.sin(B_joint2))/np.sqrt(arm.Bx**2 + arm.By**2))
 
-    C_joint1 = np.arccos((arm.Cx^2 + arm.Cy^2 - L1^2 - L2^2)/(2*L1*L2))
-    C_base1 = np.arctan2(arm.Cy, arm.Cx) - np.arcsin((L2*np.sin(C_joint1))/np.sqrt(arm.Cx^2 + arm.Cy^2))
+    C_joint1 = np.arccos((arm.Cx**2 + arm.Cy**2 - L1**2 - L2**2)/(2*L1*L2))
+    C_base1 = np.arctan2(arm.Cy, arm.Cx) - np.arcsin((L2*np.sin(C_joint1))/np.sqrt(arm.Cx**2 + arm.Cy**2))
     C_joint2 = (2*np.pi) - C_joint1
-    C_base2 = np.arctan2(arm.Cy, arm.Cx) - np.arcsin((L2*np.sin(C_joint2))/np.sqrt(arm.Cx^2 + arm.Cy^2))
+    C_base2 = np.arctan2(arm.Cy, arm.Cx) - np.arcsin((L2*np.sin(C_joint2))/np.sqrt(arm.Cx**2 + arm.Cy**2))
 
     #Plan Path Here
+    waypoints = np.array([np.array([int(A_base1/(np.pi/300)), int(A_joint1/(np.pi/300))]),
+                          np.array([int(B_base1/(np.pi/300)), int(B_joint1/(np.pi/300))]),
+                          np.array([int(C_base1/(np.pi/300)), int(C_joint1/(np.pi/300))])])
+    path1, path2 = plan.get_paths(waypoints, world)
 
-    angles=np.array([[50,40],[55,44],[60,50]])#[base_angle, joint_angle]
-    angles=angles/180*np.pi
+    angles=path1#np.array([[50,40],[55,44],[60,50]])#[base_angle, joint_angle]
+    #angles=angles/180*np.pi
     numberOfWaypoints = len(angles) # Change this based on your path
     print(numberOfWaypoints)#should display 3 at the moment
     
@@ -106,8 +110,8 @@ if __name__ == '__main__':
     for waypoint in range(numberOfWaypoints):
 
         # Get current waypoint
-        wbase_angle=angles[waypoint,0]
-        wjoint_angle=angles[waypoint,1]
+        wbase_angle=angles[waypoint][0]*(np.pi/300)
+        wjoint_angle=angles[waypoint][1]*(np.pi/300)
 
         for timeStep in range(stepsForEachMove):
 
@@ -139,7 +143,7 @@ if __name__ == '__main__':
             pidBase.previousError = BaseError # Set previous error to current error
             pidJoint.previousError = JointError # Set previous error to current error
             length=3.75*2.54/100#m
-            g=9.81#m/s^2
+            g=9.81#m/s**2
             m=0.005#kg
             feed=m*g*np.cos(arm.state[0])*length/2
             #print(arm.state[0])

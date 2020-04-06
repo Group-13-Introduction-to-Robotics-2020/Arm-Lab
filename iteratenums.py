@@ -9,7 +9,7 @@ def getConfigSpace():
     lower_theta=np.linspace(0,np.pi,300)#rads
     upper_theta=np.linspace(-np.pi,np.pi,600)#rads
 
-    crash_grid = np.zeros(300, 600)
+    crash_grid = np.zeros((300, 600))
 
     #variable label: object_number=[lowerx,lowery,upperx,uppery
     r=.25#in radius of bot to bloat obstacles
@@ -22,6 +22,7 @@ def getConfigSpace():
     i = 0
     j = 0
     for lower_angle in lower_theta:
+        j = 0
         for upper_angle in upper_theta:
             end_angle=lower_angle+upper_angle
             x=lower_length*np.cos(lower_angle)+upper_length*np.cos(end_angle)

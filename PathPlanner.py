@@ -1,7 +1,4 @@
 import numpy as np
-from matplotlib import path
-from matplotlib import pyplot
-from matplotlib import patches
 
 np.set_printoptions(threshold=10000)
 

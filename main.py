@@ -1,5 +1,7 @@
 import time
 from arm import AcrobotEnv
+import iteratenums as confspace
+import PathPlanner as plan
 import sys
 import math
 import copy
@@ -45,7 +47,8 @@ if __name__ == '__main__':
     stepsForEachMove = round(timeForEachMove/timeStep)
 
     # Make configuraton space
-    # Insert you code or calls to functions here
+    world = confspace.getConfigSpace()
+
 
     # Get three waypoints from the user
 #    Ax = int(input("Type Ax: "))
@@ -89,9 +92,7 @@ if __name__ == '__main__':
     C_joint2 = (2*np.pi) - C_joint1
     C_base2 = np.arctan2(arm.Cy, arm.Cx) - np.arcsin((L2*np.sin(C_joint2))/np.sqrt(arm.Cx^2 + arm.Cy^2))
 
-
-    # Plan a path
-    # Insert your code or calls to functions here
+    #Plan Path Here
 
     angles=np.array([[50,40],[55,44],[60,50]])#[base_angle, joint_angle]
     angles=angles/180*np.pi

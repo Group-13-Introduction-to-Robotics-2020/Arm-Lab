@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as pyplot
 
 np.set_printoptions(threshold=10000)
 
@@ -128,4 +129,24 @@ def get_paths(waypoints, world):
     path2 = planWave(world2,waypoints[2, :], waypoints[1, :])
     return path1, path2
 
+def graph_path(path, l1, l2):
+    xs = []
+    ys = []
+    for p in path:
+        angle1 = p[0]*(np.pi/300)
+        angle2 = p[1]*(np.pi/300)
+        x = l1*np.cos(angle1) + l2*np.cos(angle1+angle2)
+        y = l1*np.sin(angle1) + l2*np.sin(angle1+angle2)
+        xs.append(x)
+        ys.append(y)
 
+    fig, ax = pyplot.subplots()
+
+    pyplot.scatter(xs, ys)
+    #patch = patches.PathPatch(blocks[0], facecolor='orange')
+    # ax.add_patch(patch)
+    #ax.set_xlim(0, 72)
+    #ax.set_ylim(0, 54)
+    print(path)
+
+    pyplot.show()

@@ -48,18 +48,18 @@ if __name__ == '__main__':
     # Insert you code or calls to functions here
 
     # Get three waypoints from the user
-##    Ax = int(input("Type Ax: "))
-##    Ay = int(input("Type Ay: "))
-##    Bx = int(input("Type Bx: "))
-##    By = int(input("Type By: "))
-##    Cx = int(input("Type Cx: "))
-##    Cy = int(input("Type Cy: "))
-    Ax=1
-    Bx=2
-    Cx=3
-    Ay=4
+#    Ax = int(input("Type Ax: "))
+#    Ay = int(input("Type Ay: "))
+#    Bx = int(input("Type Bx: "))
+#    By = int(input("Type By: "))
+#    Cx = int(input("Type Cx: "))
+#    Cy = int(input("Type Cy: "))
+    Ax=5
+    Ay=3 
+    Bx=0
     By=5
-    Cy=7
+    Cx=-3
+    Cy=3
 
     arm.Ax = Ax*0.0254; # Simulaiton is in SI units
     arm.Ay = Ay*0.0254; # Simulaiton is in SI units
@@ -68,6 +68,28 @@ if __name__ == '__main__':
     arm.Cx = Cx*0.0254; # Simulaiton is in SI units
     arm.Cy = Cy*0.0254; # Simulaiton is in SI units
 
+    # Inverse Kinematics
+    # 6 sets of angles, 2 sets for each coordinate (A,B,C) for the two solutions for that point
+    # (A_base1, A_joint1), (A_base2, A_joint2), (B_base1, B_joint1), ...
+    L1 = 3.75 #inches
+    L2 = 2.5 #inches
+    
+    A_joint1 = np.arccos((arm.Ax^2 + arm.Ay^2 - L1^2 - L2^2)/(2*L1*L2))
+    A_base1 = np.arctan2(arm.Ay, arm.Ax) - np.arcsin((L2*np.sin(A_joint1))/np.sqrt(arm.Ax^2 + arm.Ay^2))
+    A_joint2 = (2*np.pi) - A_joint1
+    A_base2 = np.arctan2(arm.Ay, arm.Ax) - np.arcsin((L2*np.sin(A_joint2))/np.sqrt(arm.Ax^2 + arm.Ay^2))
+    
+    B_joint1 = np.arccos((arm.Bx^2 + arm.By^2 - L1^2 - L2^2)/(2*L1*L2))
+    B_base1 = np.arctan2(arm.By, arm.Bx) - np.arcsin((L2*np.sin(B_joint1))/np.sqrt(arm.Bx^2 + arm.By^2))
+    B_joint2 = (2*np.pi) - B_joint1
+    B_base2 = np.arctan2(arm.By, arm.Bx) - np.arcsin((L2*np.sin(B_joint2))/np.sqrt(arm.Bx^2 + arm.By^2))
+    
+    C_joint1 = np.arccos((arm.Cx^2 + arm.Cy^2 - L1^2 - L2^2)/(2*L1*L2))
+    C_base1 = np.arctan2(arm.Cy, arm.Cx) - np.arcsin((L2*np.sin(C_joint1))/np.sqrt(arm.Cx^2 + arm.Cy^2))
+    C_joint2 = (2*np.pi) - C_joint1
+    C_base2 = np.arctan2(arm.Cy, arm.Cx) - np.arcsin((L2*np.sin(C_joint2))/np.sqrt(arm.Cx^2 + arm.Cy^2))
+    
+    
     # Plan a path
     # Insert your code or calls to functions here
 

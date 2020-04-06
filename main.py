@@ -5,100 +5,61 @@ import math
 import copy
 import numpy as np
 
-boundaryLines = [
-    (np.array([1, 7]), np.array([3, 7])),
-    (np.array([1, 5]), np.array([1, 7])),
-    (np.array([3, 5]), np.array([3, 7])),
-    (np.array([1, 5]), np.array([3, 5])),
-    (np.array([-4, 6]), np.array([-2, 6])),
-    (np.array([-4, 4]), np.array([-4, 6])),
-    (np.array([-2, 4]), np.array([-2, 6])),
-    (np.array([-4, 4]), np.array([-2, 4])),
-    (np.array([-1, 1]), np.array([0, 1])),
-    (np.array([0, 2]), np.array([0, 1])),
-    (np.array([0, 2]), np.array([1, 2])),
-    (np.array([1, 3]), np.array([1, 2])),
-    (np.array([1, 3]), np.array([-1, 3])),
-    (np.array([-1, 1]), np.array([-1, 3])),
-
-]
-
-def intersect(l1, l2):
-    l1a, l2a = l1
-    l1b, l2b = l2
-
-    da = l2a - l1a
-    db = l2b - l1b
-    dp = l1a - l1b
-
-    dap = np.array([0.0, 0.0])
-    dap[0] = -da[1]
-    dap[1] = da[0]
-
-    dot = dap[0]*db[0] + dap[1]*db[1]
-    dot2 = dap[0]*dp[0] + dap[1]*dp[1]
-
-    inter = (dot2/dot)*db + l1b
-
-    upperXL1 =  inter[0] <= max(l1a[0], l2a[0])
-    upperYL1 =  inter[1] <= max(l1a[1], l2a[1])
-    upperXL2 = inter[0] <= max(l1b[0], l2b[0])
-    upperYL2 = inter[1] <= max(l1b[1], l2b[1])
-    lowerXL1 = inter[0] >= min(l1a[0], l2a[0])
-    lowerYL1 = inter[1] >= min(l1a[1], l2a[1])
-    lowerXL2 = inter[0] >= min(l1b[0], l2b[0])
-    lowerYL2 = inter[1] >= min(l1b[1], l2b[1])
-
-    return upperXL1 and upperXL2 and upperYL1 and upperYL2 and lowerXL1 and lowerXL2 and lowerYL1 and lowerYL2
-
-
-
-
-
-def hasCollision(armSeg, boundaryLines):
-    for line in boundaryLines:
-        if intersect(armSeg, line):
-            return True
-    return False
-
-def computeArmPos(j1, j2):
-    firstPoint = np.array([3.75*np.cos(j1), 3.75*np.sin(j1)])
-    secondPoint = np.array([firstPoint[0]+2.5*np.cos(j1+j2), firstPoint[1]+2.5*np.sin(j1+j2)])
-    return (firstPoint, secondPoint)
-
-def computeConfigSpace():
-    validPoints = []
-    for j1 in range(0,180):
-        for j2 in range(-180, 180):
-            pos = computeArmPos(j1*np.pi/180, j2*np.pi/180)
-            if not hasCollision(pos, boundaryLines):
-                validPoints.append([j1, j2])
-    return validPoints
-
 
 if __name__ == '__main__':
 
+
+    class Pid:
+        def __init__(self, Kp, Ki, Kd):####### do I need 2 Kps and 2 Kds, etc since it is two arms??
+            self.Kp = Kp
+            self.Ki = Ki
+            self.Kd = Kd
+            self.error = 0
+            self.previousError = 0
+            self.changeInError = 0
+            self.cummulativeError = 0
+
+        def action(self, timeStep):
+            motorCommand = self.Kp*self.error+(self.changeInError)*self.Kd+self.Ki*self.cummulativeError# Step 2: Write a PID controller for motor speed
+            return motorCommand
+
+    def anglediff(goal,current):
+        error= math.atan2(math.sin(goal-current), math.cos(goal-current))
+        return error
+
+    def sign(v_err):
+        if v_err <= 0:
+            return -1
+        return 1
+
+
+
     arm = AcrobotEnv() # set up an instance of the arm class
-    
+    arm.rendering = True # True displays the video
+
+    observation = arm.reset() #not sure if needed Remember:
+    #observation is [left reading, right reading, encoder value]
+
     timeStep = 0.02 # sec
-    timeForEachMove = 1 # sec
+    timeForEachMove = 10 # sec
     stepsForEachMove = round(timeForEachMove/timeStep)
 
-    # Make configuration space
+    # Make configuraton space
     # Insert you code or calls to functions here
-    pos = computeArmPos(np.pi/2, np.pi)
-    check =(np.array([-1,2]), np.array([1,2]))
-
-    valid = intersect(pos, check)
-    print("pi/2, -pi/4 should be at: {} and is {}".format(pos, valid))
 
     # Get three waypoints from the user
-    Ax = int(input("Type Ax: "))
-    Ay = int(input("Type Ay: "))
-    Bx = int(input("Type Bx: "))
-    By = int(input("Type By: "))
-    Cx = int(input("Type Cx: "))
-    Cy = int(input("Type Cy: "))
+#    Ax = int(input("Type Ax: "))
+#    Ay = int(input("Type Ay: "))
+#    Bx = int(input("Type Bx: "))
+#    By = int(input("Type By: "))
+#    Cx = int(input("Type Cx: "))
+#    Cy = int(input("Type Cy: "))
+    Ax=5
+    Ay=3
+    Bx=0
+    By=5
+    Cx=-3
+    Cy=3
 
     arm.Ax = Ax*0.0254; # Simulaiton is in SI units
     arm.Ay = Ay*0.0254; # Simulaiton is in SI units
@@ -107,28 +68,86 @@ if __name__ == '__main__':
     arm.Cx = Cx*0.0254; # Simulaiton is in SI units
     arm.Cy = Cy*0.0254; # Simulaiton is in SI units
 
+    # Inverse Kinematics
+    # 6 sets of angles, 2 sets for each coordinate (A,B,C) for the two solutions for that point
+    # (A_base1, A_joint1), (A_base2, A_joint2), (B_base1, B_joint1), ...
+    L1 = 3.75 #inches
+    L2 = 2.5 #inches
+
+    A_joint1 = np.arccos((arm.Ax^2 + arm.Ay^2 - L1^2 - L2^2)/(2*L1*L2))
+    A_base1 = np.arctan2(arm.Ay, arm.Ax) - np.arcsin((L2*np.sin(A_joint1))/np.sqrt(arm.Ax^2 + arm.Ay^2))
+    A_joint2 = (2*np.pi) - A_joint1
+    A_base2 = np.arctan2(arm.Ay, arm.Ax) - np.arcsin((L2*np.sin(A_joint2))/np.sqrt(arm.Ax^2 + arm.Ay^2))
+
+    B_joint1 = np.arccos((arm.Bx^2 + arm.By^2 - L1^2 - L2^2)/(2*L1*L2))
+    B_base1 = np.arctan2(arm.By, arm.Bx) - np.arcsin((L2*np.sin(B_joint1))/np.sqrt(arm.Bx^2 + arm.By^2))
+    B_joint2 = (2*np.pi) - B_joint1
+    B_base2 = np.arctan2(arm.By, arm.Bx) - np.arcsin((L2*np.sin(B_joint2))/np.sqrt(arm.Bx^2 + arm.By^2))
+
+    C_joint1 = np.arccos((arm.Cx^2 + arm.Cy^2 - L1^2 - L2^2)/(2*L1*L2))
+    C_base1 = np.arctan2(arm.Cy, arm.Cx) - np.arcsin((L2*np.sin(C_joint1))/np.sqrt(arm.Cx^2 + arm.Cy^2))
+    C_joint2 = (2*np.pi) - C_joint1
+    C_base2 = np.arctan2(arm.Cy, arm.Cx) - np.arcsin((L2*np.sin(C_joint2))/np.sqrt(arm.Cx^2 + arm.Cy^2))
+
+
     # Plan a path
     # Insert your code or calls to functions here
-    numberOfWaypoints = 10 # Change this based on your path
+
+    angles=np.array([[50,40],[55,44],[60,50]])#[base_angle, joint_angle]
+    angles=angles/180*np.pi
+    numberOfWaypoints = len(angles) # Change this based on your path
+    print(numberOfWaypoints)#should display 3 at the moment
     
+    pidJoint= Pid(.003,0,-.00009)#
+    pidBase = Pid(0.0045,0,0.0002)
     arm.reset() # start simulation
-    
+
     for waypoint in range(numberOfWaypoints):
 
         # Get current waypoint
+        wbase_angle=angles[waypoint,0]
+        wjoint_angle=angles[waypoint,1]
 
         for timeStep in range(stepsForEachMove):
 
-            tic = time.perf_counter()
+            tic = time.perf_counter() # timer to maintain loop frequency
 
+            BaseError = anglediff(wbase_angle,arm.state[0])# Step 1.1: Calculate  error based on light sensors
+            dBaseError = -1*sign(BaseError)*arm.state[2]# Step 1.2: Calculate change in error based on light sensors
+            iBaseError = pidBase.cummulativeError+dBaseError*timeStep# Step 1.3: Calculate cummulative error based on light sensors
+
+            pidBase.error = BaseError # set the class attributes
+            pidBase.changeInError = dBaseError # set the class attributes
+            pidBase.cummulativeError = iBaseError # set the class attributes
+
+            JointError = anglediff(wjoint_angle,arm.state[1])# Step 1.1: Calculate  error based on light sensors
+            dJointError = -1*sign(JointError)*arm.state[3]# Step 1.2: Calculate change in error based on light sensors
+            iJointError = pidJoint.cummulativeError+dJointError*timeStep# Step 1.3: Calculate cummulative error based on light sensors
+
+            pidJoint.error = JointError # set the class attributes
+            pidJoint.changeInError = dJointError # set the class attributes
+            pidJoint.cummulativeError = iJointError # set the class attributes
             # Control arm to reach this waypoint
 
-            actionHere1 = 0 # N torque # Change this based on your controller
-            actionHere2 = 0 # N torque # Change this based on your controller
+            actionHere1 = pidBase.action(timeStep) # Nm torque # Change this based on your controller
+            actionHere2 = pidJoint.action(timeStep) # Nm torque # Change this based on your controller
+            #print("The Joint error is",JointError,"The Base error is",BaseError)
+            #print("torque Joint is %g" %actionHere2)
+            #print("torque Base is %g" %actionHere1)
             
+            pidBase.previousError = BaseError # Set previous error to current error
+            pidJoint.previousError = JointError # Set previous error to current error
+            length=3.75*2.54/100#m
+            g=9.81#m/s^2
+            m=0.005#kg
+            feed=m*g*np.cos(arm.state[0])*length/2
+            #print(arm.state[0])
+
             arm.render() # Update rendering
-            state, reward, terminal , __ = arm.step(actionHere1, actionHere2)
+            state, reward, terminal , __ = arm.step(actionHere1+feed, actionHere2)
         
     print("Done")
     input("Press Enter to close...")
     arm.close()
+
+

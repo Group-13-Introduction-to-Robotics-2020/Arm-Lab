@@ -4,15 +4,14 @@ import matplotlib.pyplot as plt
 
 def getConfigSpace():
     lower_length=3.75
-    upper_length=2.5
-
+    upper_length=2.5#+.5/2.54#incresed the length of the arm by .5in
     lower_theta=np.linspace(0,np.pi,300)#rads
     upper_theta=np.linspace(-np.pi,np.pi,600)#rads
 
-    crash_grid = np.zeros((300, 600))
+    crash_grid = np.zeros((300,600))
 
     #variable label: object_number=[lowerx,lowery,upperx,uppery
-    r=.25#in radius of bot to bloat obstacles
+    r=0#in radius of bot to bloat obstacles
     ob1=np.array([-4-r,4-r,-2+r,6+r])
     ob2p1=np.array([-1-r,1-r,0+r,3+r])
     ob2p2=np.array([0-r,2-r,1+r,3+r])
@@ -39,7 +38,6 @@ def getConfigSpace():
 
 """
 crash=np.delete(crash,0,0)
-print(crash)
 plt.plot(crash[:,0],crash[:,1],'.')
 plt.title("Configuration Space of Two Link Robot")
 plt.ylabel("Angle between first and second link in degrees")

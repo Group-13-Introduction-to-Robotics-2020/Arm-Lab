@@ -28,7 +28,7 @@ def getConfigSpace():
     i = 0
     j = 0
     for lower_angle in lower_theta:
-        j = 0
+        j = -300
         for upper_angle in upper_theta:
             end_angle=lower_angle+upper_angle
             x=lower_length*np.cos(lower_angle)+upper_length*np.cos(end_angle)
@@ -38,12 +38,15 @@ def getConfigSpace():
                 x>=b_ob2p2[0] and x<=b_ob2p2[2] and y>=b_ob2p2[1] and y<=b_ob2p2[3] or
                 x>=b_ob3[0] and x<=b_ob3[2] and y>=b_ob3[1] and y<=b_ob3[3]):
                 crash_grid[i][j] = 1
+                #crash = np.append(crash, np.array([[180 / np.pi * (lower_angle), 180 / np.pi * (upper_angle), x, y]]),
+                #                  axis=0)
 
                 if (x>=ob1[0] and x<=ob1[2] and y>=ob1[1] and y<=ob1[3] or
                     x>=ob2p1[0] and x<=ob2p1[2] and y>=ob2p1[1] and y<=ob2p1[3] or
                     x>=ob2p2[0] and x<=ob2p2[2] and y>=ob2p2[1] and y<=ob2p2[3] or
                     x>=ob3[0] and x<=ob3[2] and y>=ob3[1] and y<=ob3[3]):
                     crash=np.append(crash,np.array([[180/np.pi*(lower_angle),180/np.pi*(upper_angle),x,y]]),axis=0)
+
 
             j += 1
         i += 1

@@ -98,8 +98,9 @@ if __name__ == '__main__':
     angles=np.asarray(angles)
     print(angles)
     numberOfWaypoints = len(angles) # Change this based on your path
-
+    plan.graph_path(angles, crash, L1, L2)
     #crash=np.delete(crash,0,0)
+    """
     plt.figure()
     plt.plot(crash[:,0],crash[:,1],'.')
     plt.plot(angles[:,0],angles[:,1],'+')
@@ -108,6 +109,7 @@ if __name__ == '__main__':
     plt.xlabel("Angle at the base in degrees")
     plt.axis([0,180,-180,180])
     plt.show()
+    """
     
     pidJoint= Pid(.003,0,0.00009)
     pidBase = Pid(0.0045,0.0000015,-0.00025)

@@ -47,7 +47,7 @@ if __name__ == '__main__':
     stepsForEachMove = round(timeForEachMove/timeStep)
 
     # Make configuraton space
-    world = confspace.getConfigSpace()
+    world, crash = confspace.getConfigSpace()
 
 
     # Get three waypoints from the user
@@ -98,7 +98,7 @@ if __name__ == '__main__':
                           np.array([int(C_base1/(np.pi/300)), int(C_joint1/(np.pi/300))])])
     path1, path2 = plan.get_paths(waypoints, world)
 
-    #plan.graph_path(path1, L1, L2)
+    plan.graph_path(path1+path2, crash, L1, L2)
 
     angles=path1+path2#np.array([[50,40],[55,44],[60,50]])#[base_angle, joint_angle]
     #angles=angles/180*np.pi

@@ -18,7 +18,7 @@ def wavefront(world, goal):
         return isIn and world[pos[0]][pos[1]] == 0
 
     while len(wave) > 0:
-        print("wave len: {}".format(len(wave)))
+        #print("wave len: {}".format(len(wave)))
         current = wave[0]
         wave = wave[1:]
         val = world[current[0]][current[1]]
@@ -129,20 +129,21 @@ def get_paths(waypoints, world):
     path2 = planWave(world2,waypoints[2, :], waypoints[1, :])
     return path1, path2
 
-def graph_path(path, l1, l2):
+def graph_path(path, world, l1, l2):
     xs = []
     ys = []
     for p in path:
         angle1 = p[0]*(np.pi/300)
         angle2 = p[1]*(np.pi/300)
-        x = l1*np.cos(angle1) + l2*np.cos(angle1+angle2)
-        y = l1*np.sin(angle1) + l2*np.sin(angle1+angle2)
-        xs.append(x)
-        ys.append(y)
+        #x = l1*np.cos(angle1) + l2*np.cos(angle1+angle2)
+        #y = l1*np.sin(angle1) + l2*np.sin(angle1+angle2)
+        xs.append(angle1)
+        ys.append(angle2)
 
     fig, ax = pyplot.subplots()
 
-    pyplot.scatter(xs, ys)
+    pyplot.plot(xs, ys, '.b')
+    pyplot.plot(world[:, 0]*np.pi/180, world[:, 1]*np.pi/180, '.r')
     #patch = patches.PathPatch(blocks[0], facecolor='orange')
     # ax.add_patch(patch)
     #ax.set_xlim(0, 72)

@@ -20,9 +20,8 @@ def getConfigSpace():
     crash=np.array([[0,0,0,0]])
     #count=0
     i = 0
-    j = 0
     for lower_angle in lower_theta:
-        j = 0
+        j = -300
         for upper_angle in upper_theta:
             end_angle=lower_angle+upper_angle
             x=lower_length*np.cos(lower_angle)+upper_length*np.cos(end_angle)
@@ -36,7 +35,7 @@ def getConfigSpace():
                 crash_grid[i][j] = 1
             j += 1
         i += 1
-    return crash_grid
+    return crash_grid, crash
 
 """
 crash=np.delete(crash,0,0)

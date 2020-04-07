@@ -39,7 +39,7 @@ if __name__ == '__main__':
     arm.rendering = True # True displays the video
 
     timeStep = 0.02 # sec
-    timeForEachMove = 0.4 # sec
+    timeForEachMove = 0.3 # sec
     stepsForEachMove = round(timeForEachMove/timeStep)
 
     # Make configuraton space
@@ -48,18 +48,13 @@ if __name__ == '__main__':
 ##    print(world)
 
     # Get three waypoints from the user
-#    Ax = int(input("Type Ax: "))
-#    Ay = int(input("Type Ay: "))
-#    Bx = int(input("Type Bx: "))
-#    By = int(input("Type By: "))
-#    Cx = int(input("Type Cx: "))
-#    Cy = int(input("Type Cy: "))
-    Ax=5
-    Ay=3
-    Bx=0
-    By=5
-    Cx=-3
-    Cy=3
+    Ax = int(input("Type Ax: "))
+    Ay = int(input("Type Ay: "))
+    Bx = int(input("Type Bx: "))
+    By = int(input("Type By: "))
+    Cx = int(input("Type Cx: "))
+    Cy = int(input("Type Cy: "))
+
 
     arm.Ax = Ax*0.0254; # Simulaiton is in SI units
     arm.Ay = Ay*0.0254; # Simulaiton is in SI units
@@ -99,18 +94,9 @@ if __name__ == '__main__':
     angles=path1+path2#[base_angle, joint_angle]
     angles=np.asarray(angles)
     numberOfWaypoints = len(angles) # Change this based on your path
+    crash=np.delete(crash,0,0)
     plan.graph_path(angles, crash, L1, L2)
-    #crash=np.delete(crash,0,0)
-    """
-    plt.figure()
-    plt.plot(crash[:,0],crash[:,1],'.')
-    plt.plot(angles[:,0],angles[:,1],'+')
-    plt.title("Path of Robot in Configuration Space")
-    plt.ylabel("Angle between first and second link in degrees")
-    plt.xlabel("Angle at the base in degrees")
-    plt.axis([0,180,-180,180])
-    plt.show()
-    """
+
 
     pidJoint= Pid(.003,0,0.00009)
     pidBase = Pid(0.0045,0.0000015,-0.00025)
@@ -129,7 +115,6 @@ if __name__ == '__main__':
 
             BaseError = anglediff(wbase_angle,arm.state[0])# Step 1.1: Calculate  error based on light sensors
             dBaseError =sign(BaseError)*arm.state[2]# Step 1.2: Calculate change in error based on light sensors
-            #dBaseError = -1*sign(BaseError)*arm.state[2]# Step 1.2: Calculate change in error based on light sensors
             iBaseError = pidBase.cummulativeError-dBaseError*timeStep# Step 1.3: Calculate cummulative error based on light sensors
 
             pidBase.error = BaseError # set the class attributes
@@ -138,19 +123,14 @@ if __name__ == '__main__':
 
             JointError = anglediff(wjoint_angle,arm.state[1])# Step 1.1: Calculate  error based on light sensors
             dJointError = sign(JointError)*arm.state[3]# Step 1.2: Calculate change in error based on light sensors
-            #dJointError = -1*sign(JointError)*arm.state[3]# Step 1.2: Calculate change in error based on light sensors
-            #iJointError = pidJoint.cummulativeError+dJointError*timeStep# Step 1.3: Calculate cummulative error based on light sensors
 
             pidJoint.error = JointError # set the class attributes
             pidJoint.changeInError = dJointError # set the class attributes
-            #pidJoint.cummulativeError = iJointError # set the class attributes
             # Control arm to reach this waypoint
 
             actionHere1 = pidBase.action(timeStep) # Nm torque # Change this based on your controller
             actionHere2 = pidJoint.action(timeStep) # Nm torque # Change this based on your controller
-            #print("The Joint error is",JointError,"The Base error is",BaseError)
-            #print("torque Joint is %g" %actionHere2)
-            #print("torque Base is %g" %actionHere1)
+
             
             pidBase.previousError = BaseError # Set previous error to current error
             pidJoint.previousError = JointError # Set previous error to current error
@@ -159,7 +139,6 @@ if __name__ == '__main__':
             m=0.005#kg
             feed1=m*g*np.cos(arm.state[0])*length/2
             #feed2=0.001*np.cos(arm.state[0]+arm.state[1])
-            #print(arm.state[0])
 
             arm.render() # Update rendering
             state, reward, terminal , __ = arm.step(actionHere1+feed1, actionHere2)

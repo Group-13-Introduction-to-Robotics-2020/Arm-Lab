@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 def getConfigSpace():
     lower_length=3.75
-    upper_length=2.5#+.5/2.54#incresed the length of the arm by .5in
+    upper_length=2.5-.5/2.54#incresed the length of the arm by .5in
     lower_theta=np.linspace(0,np.pi,300)#rads
     upper_theta=np.linspace(-np.pi,np.pi,600)#rads
 

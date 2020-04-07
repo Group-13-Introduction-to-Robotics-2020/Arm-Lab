@@ -44,6 +44,8 @@ if __name__ == '__main__':
 
     # Make configuraton space
     world,crash = confspace.getConfigSpace()
+##    np.set_printoptions(threshold=sys.maxsize)
+##    print(world)
 
     # Get three waypoints from the user
 #    Ax = int(input("Type Ax: "))
@@ -96,7 +98,6 @@ if __name__ == '__main__':
 
     angles=path1+path2#[base_angle, joint_angle]
     angles=np.asarray(angles)
-    print(angles)
     numberOfWaypoints = len(angles) # Change this based on your path
     plan.graph_path(angles, crash, L1, L2)
     #crash=np.delete(crash,0,0)
@@ -110,7 +111,7 @@ if __name__ == '__main__':
     plt.axis([0,180,-180,180])
     plt.show()
     """
-    
+
     pidJoint= Pid(.003,0,0.00009)
     pidBase = Pid(0.0045,0.0000015,-0.00025)
 

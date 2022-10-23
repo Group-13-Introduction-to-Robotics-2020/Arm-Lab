@@ -11,7 +11,7 @@ def getConfigSpace():
     crash_grid = np.zeros((300,600))
 
     #variable label: object_number=[lowerx,lowery,upperx,uppery
-    
+
     ob1=np.array([-4,4,-2,6])
     ob2p1=np.array([-1,1,0,3])
     ob2p2=np.array([0,2,1,3])
@@ -24,7 +24,7 @@ def getConfigSpace():
     b_ob2p2=np.array([0-r,2-r,1+r,3+r])
     b_ob3=np.array([1-r,5-r,3+r,7+r])
     crash=np.array([[0,0,0,0]])
-    
+
     i = 0
     j = 0
     for lower_angle in lower_theta:
@@ -60,5 +60,3 @@ plt.xlabel("Angle at the base in degrees")
 plt.axis([0,180,-180,180])
 plt.show()
 """
-
-

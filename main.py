@@ -131,7 +131,6 @@ if __name__ == '__main__':
             actionHere1 = pidBase.action(timeStep) # Nm torque # Change this based on your controller
             actionHere2 = pidJoint.action(timeStep) # Nm torque # Change this based on your controller
 
-            
             pidBase.previousError = BaseError # Set previous error to current error
             pidJoint.previousError = JointError # Set previous error to current error
             length=3.75*2.54/100#m
@@ -142,9 +141,8 @@ if __name__ == '__main__':
 
             arm.render() # Update rendering
             state, reward, terminal , __ = arm.step(actionHere1+feed1, actionHere2)
-        
+            time.sleep(10)
+
     print("Done")
     input("Press Enter to close...")
     arm.close()
-
-

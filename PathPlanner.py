@@ -141,6 +141,7 @@ def graph_path(path, world, l1, l2):
         ys.append(angle2)
 
     fig, ax = pyplot.subplots()
+    #pyplot.figure(2)
 
     pyplot.plot(xs, ys, '.b')
     pyplot.plot(world[:, 0]*np.pi/180, world[:, 1]*np.pi/180, '.r')
@@ -151,3 +152,5 @@ def graph_path(path, world, l1, l2):
     print(path)
 
     pyplot.show()
+
+    pyplot.pause(30)

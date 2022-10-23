@@ -48,12 +48,19 @@ if __name__ == '__main__':
 ##    print(world)
 
     # Get three waypoints from the user
-    Ax = int(input("Type Ax: "))
-    Ay = int(input("Type Ay: "))
-    Bx = int(input("Type Bx: "))
-    By = int(input("Type By: "))
-    Cx = int(input("Type Cx: "))
-    Cy = int(input("Type Cy: "))
+    # Ax = int(input("Type Ax: "))
+    # Ay = int(input("Type Ay: "))
+    # Bx = int(input("Type Bx: "))
+    # By = int(input("Type By: "))
+    # Cx = int(input("Type Cx: "))
+    # Cy = int(input("Type Cy: "))
+
+    Ax = 2
+    Ay = 2
+    Bx = 3
+    By = 3
+    Cx = 1
+    Cy = 1
 
 
     arm.Ax = Ax*0.0254; # Simulaiton is in SI units
@@ -91,17 +98,18 @@ if __name__ == '__main__':
     path1, path2 = plan.get_paths(waypoints, world)
     #plan.graph_path(path1, L1, L2)
 
+
     angles=path1+path2#[base_angle, joint_angle]
     angles=np.asarray(angles)
     numberOfWaypoints = len(angles) # Change this based on your path
     crash=np.delete(crash,0,0)
     plan.graph_path(angles, crash, L1, L2)
 
-
     pidJoint= Pid(.003,0,0.00009)
     pidBase = Pid(0.0045,0.0000015,-0.00025)
 
     arm.reset() # start simulation
+    print("**********************here111111111******************")
 
     for waypoint in range(numberOfWaypoints):
 
@@ -112,6 +120,7 @@ if __name__ == '__main__':
         for timeStep in range(stepsForEachMove):
 
             tic = time.perf_counter() # timer to maintain loop frequency
+            print("here")
 
             BaseError = anglediff(wbase_angle,arm.state[0])# Step 1.1: Calculate  error based on light sensors
             dBaseError =sign(BaseError)*arm.state[2]# Step 1.2: Calculate change in error based on light sensors
@@ -141,7 +150,6 @@ if __name__ == '__main__':
 
             arm.render() # Update rendering
             state, reward, terminal , __ = arm.step(actionHere1+feed1, actionHere2)
-            time.sleep(10)
 
     print("Done")
     input("Press Enter to close...")
